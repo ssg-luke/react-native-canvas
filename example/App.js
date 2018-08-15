@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Image, ScrollView, StatusBar, Text, View, StyleSheet} from 'react-native';
 
-import Canvas, {Image as CanvasImage, Path2D} from 'react-native-canvas';
+import Canvas, {Image as CanvasImage, Path2D, ImageData} from 'react-native-canvas';
 
 const Example = ({sample, children}) => (
   <View style={styles.example}>
@@ -23,6 +23,24 @@ export default class App extends Component {
     context.fillRect(0, 0, 100, 100);
 
     const {width} = await context.measureText('yo');
+
+      context.getImageData(0, 0, 100, 100)
+          .then((imageData) => {
+              const data = imageData.data;
+              const length = Object.keys(data).length;
+              for(let i = 0; i < length; i += 4) {
+                  data[i] += 100;
+                  data[i + 1] += 100;
+                  data[i + 2] += 100;
+              }
+
+              const tmp = new ImageData(data, 100, 100, canvas); // Or Uint8ClampedArray.from(data) here
+              context.putImageData(tmp, 0, 0);
+
+          });
+
+
+      console.log('"yo" text rendering width', width);
   }
 
   handleRedCircle(canvas) {
